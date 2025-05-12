@@ -1,7 +1,7 @@
 ---
-title: Challenges and insights in developing and evaluating RAG assistants
+title: "Le format Parquet et l'écosystème DuckDB: l'essayer c'est l'adopter!"
 subtitle: |
-  **[Generative AI and Official Statistics Workshop 2025]{.orange}**
+  **[Rencontres R 2025 - Mons]{.orange}**
 author:
   - name: "[Lino Galiana](https://www.linogaliana.fr/)"
     affiliations:
@@ -10,7 +10,7 @@ date: 2025-05-12
 date-format: short
 slide-number: true
 footer: |
-  **Generative AI and Official Statistics Workshop 2025**
+  **Rencontres R 2025 - Mons**
 lang: fr-FR
 slide-tone: false
 format:
@@ -21,375 +21,372 @@ lightbox: true
 ---
 
 
-## Initial example
+## Pourquoi adopter le format `Parquet` ?
 
-![](/img/answer_no_rag.png)
+!["The obligatory introductory slide" [@tigani2023big]](https://motherduck.com/_next/image/?url=https%3A%2F%2Fweb-assets-prod.motherduck.com%2Fassets%2Fimg%2Fimage_2_0f68796072.jpg&w=1920&q=75){height=300 fig-align="center"}
 
-Is this a good answer ? Hard to tell
+* Un écosystème pour répondre aux besoins de volumétrie, de performance, d'interopérabilité
 
-## Initial example
 
-:::: {.columns}
+## Limites du format `CSV`
+
+- Aucune **compression** → fichiers lourds
+- Aucune **métadonnée** : pas de types, pas de schéma
+- Lecture **orientée ligne** → peu efficace
+- Risque d'ambiguïté sur le contenu (ex : codes INSEE)
+
+::: {.callout-warning}
+**Exemple** : `01004` peut devenir `1004` si mal lu
+:::
+
+---
+
+## Parquet : un format moderne pour les données
+
+- **Stockage compact** :
+  - Compression automatique
+  - Taille réduite : jusqu'à *10x plus léger* qu’un CSV
+
+- **Lecture optimisée** :
+  - Format **orienté colonne**
+  - Ne lit que les colonnes utiles
+
+- **Interopérabilité** :
+  - Standard ouvert, lisible par R, Python, SQL, Spark...
+
+---
+
+## Exemple marquant
+
+::: {.columns}
+::: {.column width="60%"}
+
+**Recensement INSEE**
+- 20 millions de lignes
+- 92 variables
+
+| Format   | Taille |
+|----------|--------|
+| CSV      | > 4 Go |
+| Parquet  | < 500 Mo |
+
+:::
+
+::: {.column width="40%"}
+![](/slides-data/images/parquet-table1.png){fig-align="center"}
+:::
+:::
+
+---
+
+## Lecture colonne = lecture rapide
+
+![](/slides-data/images/parquet-read-columns.png){fig-align="center" height="320"}
+
+- Seules les colonnes nécessaires sont chargées
+- Moins de mémoire utilisée
+- Requêtes analytiques plus rapides
+
+---
+
+## Bonus : partitionnement & tri
+
+- Possibilité de **partitionner** les données (par région, année, etc.)
+- Améliore encore les performances de lecture
+
+![](https://ensae-reproductibilite.github.io/slides/img/partitions.png){fig-align="center" height=200}
+
+::: {.callout-note}
+Bien **choisir ses partitions** : éviter les petits fichiers !
+:::
+
+---
+
+## En résumé
+
+| Avantage           | Description                            |
+|--------------------|----------------------------------------|
+| 📦 Compression     | Fichiers plus légers                   |
+| ⚡ Lecture rapide   | Lecture sélective, format en colonne   |
+| 🧠 Schéma inclus    | Typage, noms de colonnes intégrés      |
+| 🌐 Interopérable    | Utilisable dans tous les langages      |
+| 🛠️ Cloud-friendly   | Lecture distante possible (S3, etc.)   |
+
+---
+
+
+## Exploiter un fichier `Parquet` en R
+
+> DuckDB : un moteur SQL en local, rapide, sans infrastructure
+
+
+
+## Pourquoi `Parquet` ne suffit pas seul ?
+
+- Parquet = format **de stockage**
+- Il faut un moteur pour **le lire, le filtrer, l’agréger**
+
+
+
+## `DuckDB` : le moteur SQL local moderne
+
+- Inspiré de `SQLite`, mais **orienté analytique**
+- Conçu pour lire efficacement les formats colonne (`Parquet`, `Arrow`)
+- Sans serveur → exécute les requêtes **directement en local**
+- Utilisable **via SQL** ou **`dplyr`** en R
+
+
+
+## Avantages de `DuckDB`
+
+| 🔍 Fonction                  | 🦆 `DuckDB`                         |
+|-----------------------------|-------------------------------------|
+| Installation                | Une seule librairie R (`duckdb`)   |
+| Lecture `Parquet`           | Native, directe, rapide             |
+| Compatible S3               | Oui                                 |
+| Intégration R (`dplyr`)     | Oui via `dbplyr`                    |
+| Requêtes SQL                | Oui                                 |
+| Lazy evaluation             | Oui                                 |
+
+
+
+## Exemple simple avec `duckdb` en R
+
+r
+library(duckdb)
+con <- dbConnect(duckdb::duckdb())
+
+# Lire un fichier Parquet
+dbGetQuery(con, "
+  SELECT depcom, COUNT(*) AS n
+  FROM 'data/recensement.parquet'
+  WHERE dep = '01'
+  GROUP BY depcom
+")
+
+
+- Lecture **directe** depuis le fichier
+- Pas besoin d'importer en mémoire avant d'agir
+
+
+
+## Intégration avec le tidyverse
+
+r
+library(dplyr)
+library(duckdb)
+
+con <- dbConnect(duckdb())
+
+achille <- tbl(con, "data/recensement.parquet")
+
+achille |>
+  filter(dep %in% c("01", "02")) |>
+  select(depcom, idlogement) |>
+  group_by(depcom) |>
+  summarise(n = n()) |>
+  collect()
+
+
+- `tbl()` crée une table **lazy**
+- Les opérations sont **retardées** jusqu'à `collect()`
+
+
+
+## Lazy evaluation = performance ⚡
+
+- Les instructions ne sont **pas exécutées tout de suite**
+- DuckDB construit un **plan d'exécution optimisé**
+- Seules les données utiles sont réellement lues
+
+
+
+## Exemple : plan d'exécution optimisé
+
+::: {.columns}
+::: {.column width="50%"}
+### Avant optimisation
+
+![](/slides-data/images/lazyeval1.png){height=220}
+:::
 
 ::: {.column width="50%"}
-![Answer from ChatGPT](/img/answer_rag_chatgpt.png)
+### Après optimisation
+
+- `filter()` déplacé en amont
+→ **Predicate pushdown**
+
+![](/slides-data/images/lazyeval2.png){height=220}
+:::
 :::
 
-::: {.column width="50%"}
-![Answer from Google](/img/answer_google.png)
-:::
 
-::::
 
-Both answers are better: precise, contextual
+## Pour aller plus loin
 
-## Why RAG ?
+- Lecture directe sur **S3** :
+sql
+SELECT *
+FROM 's3://bucket/data.parquet'
+WHERE dep = '36'
 
-- Retrieval-Augmented Generation (RAG) combines:
-  - [**Information retrieval**]{.orange} from a knowledge base
-  - [**Text generation**]{.orange} using aLLM with contextualized information
 
+- Utilisation dans un **workflow reproductible** :
+  - Compatible Quarto, targets, etc.
 
-::: {.callout-tip}
-## Objective:
 
-- Produce accurate information (no hallucination)
-- Produce verifiable information (source citation)
-- Propose up-to-date answer
-- Interpretation of the meaning of the question, unlike traditional text queries based on bags of words
-:::
 
-## Why doing that ? {.smaller}
+## Résumé : pourquoi `DuckDB` + `Parquet` ?
 
-- Asking Google is great but user needs to have __[good keywords]{.orange}__
-  - Assume user knows what she wants...
-  - ... and have some literacy
+| ✅ Critère                     | ✔️ Avantage |
+|------------------------------|-------------|
+| Lecture fichiers massifs     | Oui         |
+| Requêtes SQL et `dplyr`      | Oui         |
+| Lazy evaluation              | Oui         |
+| Sans serveur                 | Oui         |
+| Cloud / S3 compatible        | Oui         |
 
-. . .
 
-- [__LLMs__]{.orange} are more and more used as [__search engine__]{.orange}
-  - How can we best structure information in our website for the response to be relevant ?
 
-. . .
+## À suivre...
 
-- We have 20+ years of experience in understanding how Google works,
-  - We also need to understand how LLMs work
-  - Experimenting RAG is a good way for that
+> Des cas d’usage modernes : cloud, web, spatial… grâce à l’écosystème DuckDB 🧠
 
 
-# Typical RAG pipeline
+## Cas d’usage avancés avec `DuckDB`
 
-## Typical RAG pipeline
+> Cloud, Web, Spatial — des cas concrets pour aller plus loin
 
-![](/img/drawio/statbot-archi.png)
 
-## Challenge {.smaller .nonincremental}
 
-<br>
+## Travailler sur des données distantes (S3)
 
-:::: {.columns}
+- `DuckDB` peut lire directement depuis :
+  - `s3://...`
+  - `https://...`
+  - Stockages cloud (compatibles S3)
 
-::: {.column .nonincremental width="60%"}
-- How should we parse the documents ?
-- How to handle tables?
-- How to handle documents metadata that can be useful ?
-- Should we split the pages ?
-- How long should each chunk be ?
-- How should we chunk ?
-- ...
-:::
+- Pas besoin de :
+  - Machine virtuelle
+  - Cluster Spark
+  - PostgreSQL distant
 
-::: {.column width="40%"}
-![](/img/drawio/statbot-archi-1-parsing.png)
-:::
+💡 Lecture **on-demand**, comme si le fichier était local
 
-::::
 
-## Challenge {.smaller .nonincremental}
 
+## Exemple : lecture sur S3
 
+sql
+SELECT *
+FROM 's3://insee-bucket/data/recensement.parquet'
+WHERE dep = '36'
 
-:::: {.columns}
 
-::: {.column .nonincremental width="60%"}
-- Which embedding should I choose ?
-- Is the best performing embedding in MTEB relevant for my use case ?
-- Which backend should I use for embedding ? (VLLM, Ollama...)
-- Which vector database should I use ? (ChromaDB, QDrant...)
-- How to make my vectordatabase always available to my RAG in production ?
-- Should I only use semantic search or hybrid search ?
-- How many documents should I retrieve ?
-- Should I rerank ? How ?
-- ...
-:::
+- Même requête possible depuis R via `dbGetQuery()`
+- Accès simplifié pour les analystes
 
-::: {.column width="40%"}
-![](/img/drawio/statbot-archi-2-embedding.png)
-:::
 
-::::
 
+## Pourquoi c’est utile ?
 
-## Challenge {.smaller .nonincremental}
+| 🧠 Avantage                         | 💡 Résultat                             |
+|------------------------------------|-----------------------------------------|
+| Accès direct à des fichiers distants | Pas besoin de les télécharger          |
+| Moins de configuration              | Pas de base PostgreSQL ou VM à gérer   |
+| Compatible avec R, Python, SQL      | Intégration facile                     |
+| Reproductibilité améliorée          | Données inchangées et accessibles      |
 
-:::: {.columns}
 
-::: {.column .nonincremental width="60%"}
-- Which generative model should I use ?
-- How to prompt it to ensure context citation and avoid hallucinations ?
-- How to prompt it if there are different use cases that are covered ?
-- Which backend should I use ?
-- How to expose him to clients ? Should I expose him first to happy fews?
-- ...
-:::
 
-::: {.column width="40%"}
-![](/img/drawio/statbot-archi-3-generative.png)
-:::
+## DuckDB dans le navigateur : `duckdb-wasm` 🧠
 
-::::
+- Version WebAssembly de DuckDB
+- Fonctionne dans un simple fichier `.html`
+- Supporté par :
+  - [`Observable`](https://observablehq.com/)
+  - `Quarto` (via `ojs`)
+- Idéal pour :
+  - Visualisations interactives
+  - Sites statiques (sans serveur !)
 
-## RAG is hard
 
-::: {.center}
-{{< iconify exploding-head size=10x >}}
-:::
 
-## [<del>RAG is hard</del>]{.blue2} RAG needs evaluation {.smaller}
+## Exemple avec `duckdb-wasm` dans Quarto
 
-- Evaluation challenges:
-  - Is the retrieved context relevant?
-  - Is the generation faithful to the context?
-  - Is the answer useful to end users (e.g. analysts, statisticians)?
+js
+viewof table_dvf = Inputs.table(
+  duckdb.query("SELECT date, valeur_fonciere FROM dvf WHERE valeur_fonciere < 500000")
+)
 
-. . .
 
-- Generic metrics are not that useful
-    - Better to define use case related objectives
-    - Adapt pipelines to that end
+- ⚡ Aucune installation côté serveur
+- Tout s’exécute **dans le navigateur**
+- Sécurité, simplicité, performance
 
-. . .
 
-- Existing plug and play frameworks show limitations
-    - To build good RAG, need to go on details
 
-# Evaluation
+## Cas d’usage spatial : `GeoParquet`
 
-## Many metrics exist
+- `Parquet` peut contenir des **données géographiques**
+  - Compatible avec la norme `GeoParquet`
+  - Lecture possible via extension `SPATIAL` de DuckDB
 
-```{mermaid}
-flowchart TD
-    A[RAG Evaluation] --> B[Retrieval Quality]
-    A --> C[Generation Quality]
-    A --> D[End-to-End Evaluation]
-    B --> E[Precision, Recall, F-score,<br> NDCG, MRR...]
-    C --> F[Accuracy, Faithfulness,<br> Relevance, ROUGE/BLEU/METEOR,<br> Hallucination...]
-    D --> G[Helpfulness, Consistency,<br> Conciseness,<br> Latency, Satisfaction...]
-```
+- Permet :
+  - Jointures spatiales
+  - Calculs de distance
+  - Récupération des données sous forme `sf` dans R
 
-_An attempt to classify RAG metrics_
 
-## They are not that much helpful
 
-:::: {.columns}
+## Exemple SQL spatial
 
-::: {.column .nonincremental width="60%"}
+sql
+SELECT ST_Distance(a.geom, b.geom)
+FROM communes a, equipements b
+WHERE a.dept = '01'
 
-* RAG  __[quality depends on so many dimensions]{.orange}__...
-* ... we understood Kierkegaard's vertigo of freedom concept
 
-:::
+- Peut être exécuté dans DuckDB
+- Résultats facilement convertibles en `sf`
 
-::: {.column width="40%"}
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/800px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg)
 
-:::
+## Recap des cas d’usage avancés
 
-::::
+| 🚀 Fonction              | ✅ Supporté par `DuckDB`        |
+|-------------------------|---------------------------------|
+| Lecture sur S3 / cloud  | ✔️                             |
+| Exécution dans le web   | ✔️ (via `duckdb-wasm`)         |
+| Traitement spatial      | ✔️ (via extension `SPATIAL`)    |
+| Intégration R/Python    | ✔️ (`duckdb`, `arrow`, `sf`)    |
 
-## We need to know what we want
 
-* Best way to go forward : read Hamel Husain blog
-    * Notably: @husain2024evals and @husain2025fieldguide posts
-    * Pragmatic approach
 
-. . .
+## Un écosystème complet
 
-* Better to start with limited set of metrics
+![](https://linogaliana.github.io/parquet-recensement-tutomate-slides/img/librairies2.png){fig-align="center"}
 
-![_"The kind of dashboard that foreshadows failure." [@husain2025fieldguide](https://hamel.dev/blog/posts/field-guide/)_](https://hamel.dev/blog/posts/field-guide/images/dashboard.png){width=50% fig-align="center"}
+- 📦 Stockage = `Parquet`
+- 🧠 Traitement = `DuckDB`
+- 🧰 Interface = R / SQL / Cloud / Web
 
+→ Performant, portable, reproductible
 
-## What do we want ?
 
-* __[No hallucination !]{.orange}__
-  * _How many invented references or facts ?_
-  * [__Hallucination rate__]{.blue2}
 
-* __[Retrieve relevant content]{.orange}__:
-  * _Does the retriever find the relevant page/document for a given question ?_
-  * [__Topk retrieval__]{.blue2}
+## En résumé
 
-* Have a __[useful companion]{.orange}__ to official statistics
-  * Given the sources, is the answer satisfactory ?
-  * [__Satisfaction rate__]{.blue2}
+✅ `Parquet` + `DuckDB` =
+- Simplicité
+- Performance
+- Ouverture
+- Reproductibilité
+- ... et désormais **Web & spatial-ready**
 
 
-# How did we evaluate ?
 
-## Methodology
+## Questions ? 🙋
 
-* Around 60k pages from [insee.fr](https://www.insee.fr/fr/accueil)
+![](https://minio.lab.sspcloud.fr/lgaliana/generative-art/pythonds/kid.png){height=300}
 
-. . .
-
-* Evaluating RAG on different dimensions
-
-. . .
-
-* Main model used:
-    + Embedding: `BAAI/bge-multilingual-gemma2`
-    + Generation: `mistralai/Mistral-Small-24B-Instruct-2501`
-
-. . .
-
-* Collected expert domain Q&A
-    * Small sample: [__62 questions__]{.orange}
-    * More questions will come later
-
-## Technical details
-
-+ 2 `VLLMs` instance (OpenAI API compatible endpoints) in backend
-    + Running on Nvidia H100 GPU
-+ `ChromaDB` as vector database
-+ `Langchain` for document handling
-+ `Streamlit` for front end user interface
-
-::: {.callout-note}
-
-This is a quite demanding _pipeline_ :
-
-* Embedding and generation instances must be available at each user query
-:::
-
-## 1. Collect expert level annotations
-
-<h4>To challenge retrieval before any product launch</h4>
-
-* Once again @husain2024evals is right:
-  * Many frameworks can create tricky questions using LLM ([`RAGAS`](https://docs.ragas.io/en/stable/), [`Giskard`](https://www.giskard.ai/)...)
-  * But nothing works better than starting from [__expert questions and answers in a spreadsheet__]{.orange}
-
-
-::: {.callout-tip}
-Collect existing questions from [insee.fr](https://www.insee.fr/fr/accueil) website (e.g. [here](https://www.insee.fr/fr/statistiques/4481456#en-six-questions)) or write original ones
-:::
-
-## 1. Collect expert level annotations
-
-<h4>To challenge retrieval before any product launch</h4>
-
-![](/img/qr_eval_statbot.png)
-
-## 1. Collect expert level annotations {.smaller}
-
-<h4>To challenge retrieval before any product launch</h4>
-
-* Helped us to iterate over a "satisfying" strategy regarding [__parsing and chunking__]{.orange}
-    * Need medium sized chunks (around 1100 tokens)
-    * Not more than 1500 tokens to avoid [__lost in the middle__]{.blue2}
-
-. . .
-
-* [__Cast the tables aside__]{.orange}
-    * Hard to chunk, hard to interpret without
-    * Prioretizing text content.
-
-::: {.callout-note}
-This dataset can be later on used for any parametric change in our RAG pipeline
-:::
-
-## 2. Collect user feedbacks {.smaller}
-<h4>To ensure we satisfy user needs</h4>
-
-* Having an interface gamifies the evaluation process...
-    + ... which can help collecting evaluation
-
-. . .
-
-* We want users to give honest feedbacks on [__different dimensions__]{.orange}:
-    * Sources used, quality of the answer
-    * Free form to understand for manual inspection to understand what does not work
-    * Simple feedback (👍️/👎️) to track satisfaction rate
-
-::: {.callout-tip}
-We need good satisfaction rates before A/B testing !
-:::
-
-## Retriever quality
-
-* Helped monitor retriever quality
-* Helped understand problems in website parsing
-
-{{< include /img/observable/_retriever.qmd >}}
-
-
-## RAG behavior
-
-* Helped finding a satisfying prompt
-
-{{< include /img/observable/_hallucination.qmd >}}
-
-## First user feedbacks
-
-* First feedbacks are mostly positive :
-    * [__Streaming__]{.orange} is fast
-
-* Main negative feedbacks:
-    * Retriever gives [__outdated papers__]{.orange} (how to prioretize recent content?)
-
-
-::: {.callout-note}
-## RAG demo: [rag-insee-demo-unece.lab.sspcloud.fr](rag-insee-demo-unece.lab.sspcloud.fr)
-
-Easy to put into production thanks to:
-
-* Our modular approach (`Chroma` or `VLLM` APIs)
-* Our `Kubernetes` infrastructure [`SSPCloud`](https://www.sspcloud.fr/)
-
-:::
-
-## Remaining challenges
-
-* Need to prioritize recent content
-
-. . .
-
-* Need to prioritize national statistics unless question about specific area
-
-
-## Conclusion
-
-- RAG quality depends first (and IMO mostly) on how documents are __[parsed and processed]{.orange}__
-  - [__Back to information retrieval problem__]{.blue2} !
-  - See @barnett2024sevenfailurepointsengineering
-  - Lot of RAG resources focused on short documents...
-
-. . .
-
-- We struggled for a long time because of [__poor technical choices__]{.orange}
-  - Other choices (e.g. reranking, generative models...) can be handled after having a good pipeline
-
-
-## Conclusion
-
-- `llms.xt` ([llmstxt.org/](https://llmstxt.org/)): proposal to normalize website content for LLM ingestion
-    - Markdown based approach
-    - [Some big actors](https://directory.llmstxt.cloud/) have adopted that norm
-
-- After SEO, [__we will have GEO__]{.orange} (Generative Engine Optimization)
-    - We want an easy access to reliable information
-
-
-## References
