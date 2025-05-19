@@ -21,6 +21,7 @@ lightbox: true
 ---
 
 
+
 # Pourquoi le format `Parquet` ?
 
 ## Enjeux
