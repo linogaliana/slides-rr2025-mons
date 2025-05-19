@@ -1,0 +1,149 @@
+[
+  {
+    "objectID": "index.html#enjeux",
+    "href": "index.html#enjeux",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Enjeux",
+    "text": "Enjeux\n\nLe choix d’un format de données répond à un arbitrage entre plusieurs critères :\n\nPublic cible\nFinalité (traitement, analyse, diffusion)\nVolumétrie\nInteropérabilité"
+  },
+  {
+    "objectID": "index.html#formats-traditionnels",
+    "href": "index.html#formats-traditionnels",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Formats traditionnels",
+    "text": "Formats traditionnels\n\nFormats de données adhérents à un langage (sas7bdat, RDS, fst, etc.)\n\nNon-interopérables -&gt; à éviter !\n\n\n\n\nLe format CSV\n\nInteropérable et simple d’utilisation\nPas de gestion des méta-données\nPeu adapté aux données volumineuses"
+  },
+  {
+    "objectID": "index.html#limites-du-csv",
+    "href": "index.html#limites-du-csv",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Limites du CSV",
+    "text": "Limites du CSV\n\n\n\nDes performances limitées\n\nStockage : non-compressé -&gt; espace disque élevé\nLecture : “orienté-ligne” -&gt; performances faibles\n\n\n\n\n\n\n\n\n\nPas de typage des données à l’écriture du fichier\n\nDemande expertise et précaution à la lecture\nExemple: 01004 pour le code commune d’Ambérieu-en-Bugey"
+  },
+  {
+    "objectID": "index.html#un-format-léger",
+    "href": "index.html#un-format-léger",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Un format léger ",
+    "text": "Un format léger \n\nStockage :\n\nCompression : entre 5 et 20 fois plus léger qu’un CSV\n\n\n\n\n\n\n\n\n\nExemple: Recensement de la Population\n\n\n\nFicher détail : 20 millions de lignes, 92 variables\n\nCSV: &gt; 4Go\nParquet: &lt; 500Mo"
+  },
+  {
+    "objectID": "index.html#un-format-efficace",
+    "href": "index.html#un-format-efficace",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Un format efficace",
+    "text": "Un format efficace\n\nLecture :\n\nJusqu’à 34x plus rapide qu’un CSV\n\n\n\n\n“Orienté colonne”\n\nOptimisé pour les traitements analytiques\nLimite la quantité de données à mettre en mémoire\nConçu pour être écrit une fois mais lu fréquemment"
+  },
+  {
+    "objectID": "index.html#un-format-universel-et-fiable",
+    "href": "index.html#un-format-universel-et-fiable",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Un format universel et fiable",
+    "text": "Un format universel et fiable\n\nGestion native des méta-données\n\nDéfinition automatique d’un schéma (noms, types)\nMise à disposition plus robuste\n\n\n\n\nInteropérable\n\n\n\n\nOpen-source\n\n\n\n\nNon lisible par un humain mais de plus en plus de visualiseurs en ligne"
+  },
+  {
+    "objectID": "index.html#parquet-un-format-plébiscité",
+    "href": "index.html#parquet-un-format-plébiscité",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Parquet : un format plébiscité",
+    "text": "Parquet : un format plébiscité\nTout un écosystème autour de Parquet:\n\nDes formats associés : Iceberg, Delta\nDes acteurs importants s’appuient dessus:"
+  },
+  {
+    "objectID": "index.html#parquet-quel-usage-à-linsee",
+    "href": "index.html#parquet-quel-usage-à-linsee",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Parquet: quel usage à l’Insee ?",
+    "text": "Parquet: quel usage à l’Insee ?\n\nMise à disposition interne de données: format privilégié\n\n\n\nDiffusion: pour les données lourdes\n\n\n\n\nPermis d’utiliser  pour de la valorisation de données administratives\n\nFin de l’hésitation entre tidyverse et data.table\nFin de la guéguerre  / \n\n\n\n\n\nSocle important dans les formations aux bonnes pratiques de l’Insee"
+  },
+  {
+    "objectID": "index.html#la-preuve",
+    "href": "index.html#la-preuve",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "La preuve !",
+    "text": "La preuve !"
+  },
+  {
+    "objectID": "index.html#enjeu",
+    "href": "index.html#enjeu",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Enjeu",
+    "text": "Enjeu\n\nParquet ne résout pas tout\n\nL’espace disque est optimisé\nLes données décompressées doivent passer en RAM\n\n\n\n\nLe framework adapté dépend de la volumétrie\n\nPour la plupart des besoins : Arrow et DuckDB\nPour des besoins plus avancés : Spark (de moins en moins pertinent, cf. “big data is dead” par Jordan Tigani)"
+  },
+  {
+    "objectID": "index.html#les-frameworks",
+    "href": "index.html#les-frameworks",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Les frameworks",
+    "text": "Les frameworks\n\nDeux frameworks de référence : Arrow et DuckDB\n\nOrientation fichier (Arrow) VS orientation BDD (DuckDB)\n\n\n\n\nTraitement en-mémoire optimisé\n\nOrientés-colonne\nLazy evaluation (prochaine slide)\n\n\n\n\n\nTrès bonne intégration:\n\nAvec le tidyverse ()\nAvec le système de stockage S3"
+  },
+  {
+    "objectID": "index.html#exemple-simple-avec-duckdb",
+    "href": "index.html#exemple-simple-avec-duckdb",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Exemple simple avec duckdb",
+    "text": "Exemple simple avec duckdb\nlibrary(duckdb)\ncon &lt;- dbConnect(duckdb::duckdb())\n\n# Lire un fichier Parquet\ndbGetQuery(con, \"\n  FROM 'data/recensement.parquet'\n  SELECT depcom, COUNT(*) AS n\n  WHERE dep = '01'\n  GROUP BY depcom\n\")\n\nLecture directe du fichier, SQL user friendly\nPas besoin d’importer en mémoire avant d’agir"
+  },
+  {
+    "objectID": "index.html#intégration-avec-le-tidyverse",
+    "href": "index.html#intégration-avec-le-tidyverse",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Intégration avec le tidyverse",
+    "text": "Intégration avec le tidyverse\nlibrary(dplyr)\nlibrary(duckdb)\n\ncon &lt;- dbConnect(duckdb())\n\nrp &lt;- tbl(con, \"data/recensement.parquet\")\n\nrp |&gt;\n  filter(dep == \"01\") |&gt;\n  select(depcom, idlogement) |&gt;\n  group_by(depcom) |&gt;\n  summarise(n = n()) |&gt;\n  collect()\n\ntbl() crée une table lazy\nLes opérations sont retardées jusqu’à collect():\n\nDuckDB optimise le plan pour gagner en performance"
+  },
+  {
+    "objectID": "index.html#intégration-native-à-s3",
+    "href": "index.html#intégration-native-à-s3",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Intégration native à S3",
+    "text": "Intégration native à S3\n\nIntégration native avec S3\n\nPour travailler sur des serveurs à l’état de l’art…\nPlutôt que sur des ordinateurs aux ressources limitées\n\nOn peut lire la donnée sur S3 presque comme si elle était en local\n\nFROM 's3://bucket_name/filename.extension';\nSELECT *\nWHERE DEPT=='36'"
+  },
+  {
+    "objectID": "index.html#duckdb-dans-le-navigateur",
+    "href": "index.html#duckdb-dans-le-navigateur",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "DuckDB dans le navigateur",
+    "text": "DuckDB dans le navigateur\n\nDuckDB WASM pour faire du DuckDB dans le navigateur :\n\nPour des dataviz réactives… dans des sites statiques !\nBye bye les galères de déploiement de Shiny, Streamlit…\n\nSimple d’usage avec Observable (et donc Quarto!)"
+  },
+  {
+    "objectID": "index.html#exemple",
+    "href": "index.html#exemple",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Exemple",
+    "text": "Exemple\n\nhtml`\n  &lt;div style=\"display: flex; flex-direction: column; gap: 1rem;\"&gt;\n\n    &lt;!-- Search bar at the top --&gt;\n    &lt;div&gt;${viewof search}&lt;/div&gt;\n\n    &lt;!-- Two-column block --&gt;\n    &lt;div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; backgroundColor: '#293845';\"&gt;\n      &lt;div&gt;${produce_histo(dvf)}&lt;/div&gt;\n      &lt;div&gt;${viewof table_dvf}&lt;/div&gt;\n    &lt;/div&gt;\n\n\n  &lt;/div&gt;\n`\n\n\n\n\n\n\n\nviewof search = Inputs.select(cog, {format: x =&gt; x.LIBELLE, value: cog.find(t =&gt; t.LIBELLE == \"Grasse\")})\n\ncog = db.query(`SELECT * FROM read_csv_auto(\"https://minio.lab.sspcloud.fr/lgaliana/data/python-ENSAE/cog_2023.csv\") WHERE DEP == '06'`)\ndvf = db.query(query)\n\ndb = DuckDBClient.of({})\n\nquery = `\n  FROM read_parquet('https://minio.lab.sspcloud.fr/projet-formation/nouvelles-sources/data/geoparquet/dvf.parquet')\n  SELECT\n    CAST(date_mutation AS date) AS date,\n    valeur_fonciere, code_commune,\n    longitude, latitude, valeur_fonciere AS valeur_fonciere_bar\n  WHERE code_commune = '${search.COM}'\n`\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nviewof table_dvf = Inputs.table(dvf, {columns: [\"date\", \"valeur_fonciere\"], rows: 15})\n\nproduce_histo = function(dvf){\n  const histo = Plot.plot({\n  style: {backgroundColor: \"transparent\"},\n  marks: [\n    Plot.rectY(dvf, Plot.binX({y: \"count\"}, {x: \"valeur_fonciere\", fill: \"#ff562c\"})),\n    Plot.ruleY([0])\n  ]\n})\n  return histo\n}"
+  },
+  {
+    "objectID": "index.html#cas-dusage-spatial-geoparquet",
+    "href": "index.html#cas-dusage-spatial-geoparquet",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Cas d’usage spatial : GeoParquet",
+    "text": "Cas d’usage spatial : GeoParquet\n\nParquet peut contenir des données géographiques\n\nCompatible avec la norme GeoParquet\nLecture possible via extension SPATIAL de DuckDB\n\nPermet :\n\nJointures spatiales\nCalculs de distance\nRécupération des données sous forme sf dans R"
+  },
+  {
+    "objectID": "index.html#conclusion-parquet-duckdb",
+    "href": "index.html#conclusion-parquet-duckdb",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Conclusion: Parquet + DuckDB =",
+    "text": "Conclusion: Parquet + DuckDB =\n\nSimplicité et lisibilité\n\n\n\nPerformance\n\n\n\n\nInteropérabilité\n\n\n\n\nUn écosystème cloud-ready, web-ready & spatial-ready"
+  },
+  {
+    "objectID": "index.html#questions",
+    "href": "index.html#questions",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Questions ? 🙋",
+    "text": "Questions ? 🙋"
+  },
+  {
+    "objectID": "index.html#partitionnement-tri",
+    "href": "index.html#partitionnement-tri",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Partitionnement & tri",
+    "text": "Partitionnement & tri\n\nPartitionner ou ordonner les données\n\n\n\n\n\n\n\n\n\n\n\n\nL’art de bien partitionner\n\n\n\nPartitionner par une/des variable(s) d’intérêt si gros fichier\n\nEviter de créer de nombreux petits (&lt; 128Mo) fichiers\n\nSinon ordonner les données avant d’écrire le fichier (cf. Eric Mauvière)"
+  },
+  {
+    "objectID": "index.html#exemple-anatomie",
+    "href": "index.html#exemple-anatomie",
+    "title": "Le format Parquet et l’écosystème DuckDB: l’essayer c’est l’adopter!",
+    "section": "Exemple: anatomie",
+    "text": "Exemple: anatomie\n```{ojs}\nviewof search = Inputs.select(cog, {format: x =&gt; x.LIBELLE, value: cog.find(t =&gt; t.LIBELLE == \"Grasse\")})\n\ncog = db.query(`SELECT * FROM read_csv_auto(\"https://minio.lab.sspcloud.fr/lgaliana/data/python-ENSAE/cog_2023.csv\") WHERE DEP == '06'`)\ndvf = db.query(query)\n\ndb = DuckDBClient.of({})\n\nquery = `\n  FROM read_parquet('https://minio.lab.sspcloud.fr/projet-formation/nouvelles-sources/data/geoparquet/dvf.parquet')\n  SELECT\n    CAST(date_mutation AS date) AS date,\n    valeur_fonciere, code_commune,\n    longitude, latitude, valeur_fonciere AS valeur_fonciere_bar\n  WHERE code_commune = '${search.COM}'\n`\n```\nAvec un peu de code  supplémentaire (voir sur )"
+  }
+]
