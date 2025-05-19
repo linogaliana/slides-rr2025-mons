@@ -1,5 +1,5 @@
 ---
-title: "Le format Parquet et l'écosystème DuckDB: l'essayer c'est l'adopter!"
+title: "Le format `Parquet` et l'écosystème `DuckDB`: l'essayer c'est l'adopter!"
 subtitle: |
   **[Rencontres R 2025 - Mons]{.orange}**
 author:
@@ -58,9 +58,10 @@ lightbox: true
 ::: {.column width=30%}
 
 
-![](images/parquet-table1.png){fig-align="center"}
+![](/slides-data/images/parquet-table1.png){fig-align="center"}
 
 :::
+
 
 
 - **[Pas de typage]{.orange}** des données à l'écriture du fichier
@@ -105,23 +106,6 @@ lightbox: true
 
 ![](/slides-data/images/parquet-read-columns.png){fig-align="center"}
 
-## Pour optimiser la lecture
-
-- [**Partitionner**]{.orange} ou [**ordonner**]{.orange} les données
-
-
-![](https://ensae-reproductibilite.github.io/slides/img/partitions.png){fig-align="center" height="230"}
-
-::: {.nonincremental}
-::::: {.callout-warning}
-## L'art de bien partitionner
-
-- Partitionner par une/des [**variable(s) d'intérêt**]{.blue2} si gros fichier
-    + [**Eviter**]{.blue2} de créer de [**nombreux petits (< 128Mo) fichiers**]{.blue2}
-- Sinon ordonner les données avant d'écrire le fichier (cf. [Eric Mauvière](https://www.icem7.fr/outils/comment-bien-preparer-son-parquet/))
-
-:::::
-:::
 
 ## Un format universel et fiable
 
@@ -162,20 +146,26 @@ Tout un écosystème autour de `Parquet`:
 
 :::
 
-## Bonus : partitionnement & tri
+## `Parquet`: quel usage à l'Insee ?
 
-- Possibilité de **partitionner** ou **trier** les données (par région, année, etc.)
-- Améliore la vitesse de lecture de sous-échantillons
+* __[Mise à disposition interne]{.orange}__ de données: format privilégié
 
-![](https://ensae-reproductibilite.github.io/slides/img/partitions.png){fig-align="center" height=200}
+. . .
 
-::: {.callout-note}
-Bien **choisir ses partitions** : éviter les petits fichiers !
-:::
+* __[Diffusion]{.orange}__: pour les données lourdes
 
----
+. . .
 
-## En résumé
+* Permis d'utiliser {{< fa brands r-project >}} pour de la [__valorisation de données administratives__]{.orange}
+    * Fin de l'hésitation entre `tidyverse` et `data.table`
+    * Fin de la guéguerre {{< fa brands r-project >}} / {{< fa brands python >}}
+
+. . .
+
+* Socle important dans les __[[formations aux bonnes pratiques de l'Insee](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/)]{.orange}__
+
+
+## La preuve !
 
 ![](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/tableau-perf-parquet.png)
 
@@ -185,13 +175,14 @@ Bien **choisir ses partitions** : éviter les petits fichiers !
 ## Enjeu
 
 * `Parquet` ne résout pas tout
-  * L’espace disque est optimisé
+  * L’[__espace disque__]{.blue2} est optimisé
   * Les données décompressées doivent __[passer en RAM]{.blue2}__
 
 . . .
 
 * Le framework adapté dépend de la [__volumétrie__]{.orange}
   * Pour la plupart des besoins : `Arrow` et `DuckDB`
+  * Pour des besoins plus avancés : `Spark` (de moins en moins pertinent, cf. ["_big data is dead_"](https://motherduck.com/blog/big-data-is-dead/) par Jordan Tigani)
 
 
 ## Les frameworks
@@ -212,18 +203,6 @@ Bien **choisir ses partitions** : éviter les petits fichiers !
   - Avec le système de stockage `S3`
 
 
-## Avantages de `DuckDB`
-
-| 🔍 Fonction                  | 🦆 `DuckDB`                         |
-|-----------------------------|-------------------------------------|
-| Installation                | Pas de serveur, juste une librairie (`duckdb`)   |
-| Lecture `Parquet`           | Native, directe, rapide             |
-| Compatible S3               | Oui                                 |
-| Intégration R (`dplyr`)     | Oui via `dbplyr`                    |
-| Requêtes SQL                | Oui                                 |
-| Lazy evaluation             | Oui                                 |
-
-
 
 ## Exemple simple avec `duckdb`
 
@@ -240,7 +219,7 @@ dbGetQuery(con, "
 ")
 ```
 
-- Lecture **directe** depuis le fichier
+- Lecture **directe** du fichier, SQL _user friendly_
 - Pas besoin d'importer en mémoire avant d'agir
 
 
@@ -351,6 +330,7 @@ produce_histo = function(dvf){
 }
 ```
 
+
 ## Cas d’usage spatial : `GeoParquet`
 
 - `Parquet` peut contenir des **données géographiques**
@@ -365,22 +345,69 @@ produce_histo = function(dvf){
 
 
 
-## En résumé
+## Conclusion: `Parquet` + `DuckDB` =
 
-✅ `Parquet` + `DuckDB` =
+- Simplicité et lisibilité
 
-- Simplicité
+. . .
+
 - Performance
-- Ouverture
-- Reproductibilité
-- ... et désormais **Web & spatial-ready**
+
+. . .
+
+- Interopérabilité
+
+. . .
+
+- Un écosystème _cloud-ready_, _web-ready_ & _spatial-ready_
 
 
 
 ## Questions ? 🙋
 
-![](https://minio.lab.sspcloud.fr/lgaliana/generative-art/pythonds/kid.png){height=300}
+![](https://minio.lab.sspcloud.fr/lgaliana/generative-art/pythonds/kid.png){height=600 fig-align="center"}
 
 
 
+# Bonus
 
+## Partitionnement & tri
+
+- [**Partitionner**]{.orange} ou [**ordonner**]{.orange} les données
+
+
+![](https://ensae-reproductibilite.github.io/slides/img/partitions.png){fig-align="center" height="230"}
+
+::: {.nonincremental}
+::::: {.callout-warning}
+## L'art de bien partitionner
+
+- Partitionner par une/des [**variable(s) d'intérêt**]{.blue2} si gros fichier
+    + [**Eviter**]{.blue2} de créer de [**nombreux petits (< 128Mo) fichiers**]{.blue2}
+- Sinon ordonner les données avant d'écrire le fichier (cf. [Eric Mauvière](https://www.icem7.fr/outils/comment-bien-preparer-son-parquet/))
+
+:::::
+:::
+
+
+## Exemple: anatomie
+
+```{{ojs}}
+viewof search = Inputs.select(cog, {format: x => x.LIBELLE, value: cog.find(t => t.LIBELLE == "Grasse")})
+
+cog = db.query(`SELECT * FROM read_csv_auto("https://minio.lab.sspcloud.fr/lgaliana/data/python-ENSAE/cog_2023.csv") WHERE DEP == '06'`)
+dvf = db.query(query)
+
+db = DuckDBClient.of({})
+
+query = `
+  FROM read_parquet('https://minio.lab.sspcloud.fr/projet-formation/nouvelles-sources/data/geoparquet/dvf.parquet')
+  SELECT
+    CAST(date_mutation AS date) AS date,
+    valeur_fonciere, code_commune,
+    longitude, latitude, valeur_fonciere AS valeur_fonciere_bar
+  WHERE code_commune = '${search.COM}'
+`
+```
+
+Avec un peu de code {{< fa brands js-square >}} supplémentaire ([voir sur {{< fa brands github >}}](https://github.com/linogaliana/slides-rr2025-mons))
